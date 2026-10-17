@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#104675">
+  <meta name="description" content="Controle de presença CCB: organize reuniões e exporte listas em PDF, Word ou WhatsApp, mesmo sem internet.">
+  <title>Lista de Presença Simplificada CCB</title>
+  <link rel="icon" type="image/png" href="assets/logo-ccb.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/jszip.min.js" defer></script>
+  <script src="config.js" defer></script>
+  <script src="exports.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="layout" id="inicio">
+    <section class="editor" aria-label="Formulário de controle de presença">
+      <header class="editor-header">
+        <div class="brand" aria-label="Congregação Cristã no Brasil e símbolos musicais">
+          <img class="logo-ccb" src="assets/logo-ccb.png" alt="CCB">
+          <img class="logo-sol" src="assets/clave-sol.png" alt="Clave de sol">
+          <img class="logo-fa" src="assets/clave-fa.png" alt="Clave de fá">
+        </div>
+        <h1>LISTA DE PRESENÇA SIMPLIFICADA CCB</h1>
+        <button id="btn-novo-evento" class="btn btn-primary btn-new" type="button">Novo Evento</button>
+        <p id="save-indicator" class="save-indicator" aria-live="polite"><span class="online-dot"></span> Dados salvos neste dispositivo</p>
+      </header>
+
+      <fieldset class="form-panel">
+        <legend>Dados da Reunião</legend>
+        <div class="field field-full">
+          <label for="evento">Evento</label>
+          <input id="evento" name="evento" type="text" maxlength="100" autocomplete="off" placeholder="Ex.: RRM, Ensaio Local, Reunião de Músicos">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="local">Local do Evento</label>
+            <input id="local" name="local" type="text" maxlength="120" placeholder="Ex.: CCB Miguel Couto" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="data">Data</label>
+            <input id="data" name="data" type="date">
+          </div>
+        </div>
+        <div class="field field-notes">
+          <label for="anotacoes">Anotações Gerais</label>
+          <textarea id="anotacoes" rows="3" maxlength="3000" placeholder="Registre aqui as observações da reunião..."></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset class="form-panel participants-panel">
+        <legend>Adicionar Participante</legend>
+        <form id="form-participante" novalidate>
+          <div class="field">
+            <label for="nome">Nome do irmão / Irmã <span class="required" title="Obrigatório">*</span></label>
+            <input id="nome" name="nome" type="text" maxlength="120" required autocomplete="off" placeholder="Nome completo">
+          </div>
+          <div class="field">
+            <label for="comum">Comum Congregação</label>
+            <input id="comum" name="comum" type="text" maxlength="120" autocomplete="off" placeholder="Congregação">
+          </div>
+          <div class="field">
+            <label for="cargo">Cargo / Ministério</label>
+            <input id="cargo" name="cargo" type="text" maxlength="120" autocomplete="off" placeholder="Cargo ou ministério">
+          </div>
+          <p class="status-label" id="status-label">Situação do participante</p>
+          <div class="status-options" role="radiogroup" aria-labelledby="status-label">
+            <label class="status-choice present"><input type="radio" name="status" value="P" checked><span>Presença (P)</span></label>
+            <label class="status-choice absent"><input type="radio" name="status" value="F"><span>Falta (F)</span></label>
+            <label class="status-choice justified"><input type="radio" name="status" value="FJ"><span>Falta Justificada (FJ)</span></label>
+            <label class="status-choice optional"><input type="radio" name="status" value="FC"><span>Facultativo (FC)</span></label>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" id="btn-add" type="submit">Adicionar participante</button>
+            <button class="btn btn-outline" id="btn-clear" type="button">Limpar Campos do Participante</button>
+          </div>
+        </form>
+      </fieldset>
+    </section>
+
+    <section class="preview" aria-label="Prévia da lista de presença">
+      <p class="preview-eyebrow">Prévia</p>
+      <div class="brand brand-preview" aria-hidden="true">
+        <img class="logo-ccb" src="assets/logo-ccb.png" alt="">
+        <img class="logo-sol" src="assets/clave-sol.png" alt="">
+        <img class="logo-fa" src="assets/clave-fa.png" alt="">
+      </div>
+      <h2>Lista de Presença CCB</h2>
+      <div class="event-summary">
+        <p><strong>Evento:</strong> <span id="pv-evento">Não informado</span></p>
+        <p><strong>Local do Evento:</strong> <span id="pv-local">Não informado</span></p>
+        <p><strong>Data:</strong> <span id="pv-data">—</span></p>
+      </div>
+      <hr class="preview-rule">
+      <div class="counters" aria-label="Resumo da presença">
+        <div class="counter counter-present"><span>Presente</span><strong id="count-p">0</strong></div>
+        <div class="counter counter-absent"><span>Falta</span><strong id="count-f">0</strong></div>
+        <div class="counter counter-justified"><span>Falta Justificada</span><strong id="count-fj">0</strong></div>
+        <div class="counter counter-optional"><span>Facultativo</span><strong id="count-fc">0</strong></div>
+      </div>
+      <div class="list-area" id="list-area">
+        <ol class="participants-list" id="participants-list" aria-label="Participantes adicionados"></ol>
+        <p class="empty-list" id="empty-list">Nenhum participante adicionado. Preencha o formulário ao lado para começar.</p>
+      </div>
+      <hr class="preview-rule" id="rule-after-list">
+      <div class="totals" aria-label="Totais da reunião">
+        <p>Presentes: <strong id="total-p">0</strong></p>
+        <p>Faltantes: <strong id="total-f">0</strong></p>
+        <p>Falta Justificada: <strong id="total-fj">0</strong></p>
+        <p>Facultativo: <strong id="total-fc">0</strong></p>
+        <p class="total-all">Total de participantes: <strong id="total-all">0</strong></p>
+      </div>
+      <p class="notes-preview"><strong>Anotações Gerais:</strong> <span id="pv-anotacoes">—</span></p>
+      <p class="blessing">Deus Abençoe a todos!</p>
+      <div class="preview-bottom">
+        <div class="export-actions">
+          <button class="btn btn-whatsapp" id="btn-whatsapp" type="button">Gerar Mensagem para WhatsApp</button>
+          <button class="btn btn-dark" id="btn-pdf" type="button">Gerar PDF</button>
+          <button class="btn btn-word" id="btn-word" type="button">Gerar Word (.docx)</button>
+          <button class="btn btn-outline small-backup" id="btn-backup" type="button">Salvar cópia (.json)</button>
+          <button class="btn btn-outline small-backup btn-import" id="btn-import" type="button">Restaurar cópia (.json)</button>
+          <input id="import-file" type="file" accept=".json,application/json" hidden>
+        </div>
+        <p class="credits">Sistema criado para ajudar os irmãos na organização da presença em reuniões em geral.<br>Dúvidas e sugestões de melhorias, entre em contato: (21) 98143-9828</p>
+        <details class="sync-settings" id="sync-settings">
+          <summary>Sincronização opcional com Java 21 + MySQL</summary>
+          <div class="sync-form">
+            <p>O GitHub Pages guarda as informações neste aparelho, inclusive offline. Para também usar o MySQL, configure um backend Java hospedado separadamente.</p>
+            <label for="api-url">URL pública do backend (HTTPS)</label>
+            <input id="api-url" type="url" placeholder="https://api.seudominio.com.br" spellcheck="false" autocomplete="url">
+            <label for="api-user">Usuário do backend</label>
+            <input id="api-user" type="text" autocomplete="username" placeholder="Usuário">
+            <label for="api-password">Senha do backend (não é salva)</label>
+            <input id="api-password" type="password" autocomplete="current-password" placeholder="Senha">
+            <div class="sync-buttons">
+              <button class="btn btn-primary" type="button" id="btn-sync">Enviar dados ao MySQL</button>
+              <button class="btn btn-outline" type="button" id="btn-load-cloud">Carregar do MySQL</button>
+            </div>
+            <p id="sync-feedback" class="sync-feedback" role="status">Sincronização desativada. Seus dados permanecem salvos localmente.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden>
+    <span class="toast-icon" aria-hidden="true">✓</span><span id="toast-text">Participante adicionado com sucesso!</span>
+  </div>
+  <dialog class="confirm-dialog" id="new-event-dialog" aria-labelledby="dialog-title">
+    <form method="dialog">
+      <h3 id="dialog-title">Criar um novo evento?</h3>
+      <p>Esta ação apagará <strong>o evento e os participantes deste dispositivo</strong>. Exporte ou salve uma cópia antes, se desejar.</p>
+      <div class="dialog-actions">
+        <button type="submit" class="btn btn-outline" value="cancel">Cancelar</button>
+        <button type="submit" class="btn btn-danger" value="confirm">Sim, novo evento</button>
+      </div>
+    </form>
+  </dialog>
+  <noscript>Ative o JavaScript do navegador para usar o controle de presença.</noscript>
+</body>
+</html>
