@@ -1,6 +1,6 @@
-/* Cache do próprio site. Requisições para API externa jamais são cacheadas. */
-const CACHE = 'ccb-presenca-v2-20261017-r2';
-const FILES = ['./','./index.html','./style.css','./app.js','./exports.js','./config.js','./vendor/jszip.min.js','./assets/logo-ccb.png','./assets/clave-sol.png','./assets/clave-fa.png','./assets/lixeira.png','./assets/emoji-check.png','./assets/emoji-cross.png'];
+/* Cache offline dos arquivos públicos do site. */
+const CACHE = 'ccb-presenca-v3-20261018-sem-sincronizacao';
+const FILES = ['./','./index.html','./style.css','./app.js','./exports.js','./vendor/jszip.min.js','./assets/logo-ccb.png','./assets/clave-sol.png','./assets/clave-fa.png','./assets/lixeira.png','./assets/emoji-check.png','./assets/emoji-cross.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(()=>self.skipWaiting()));
 });

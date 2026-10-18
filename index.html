@@ -9,7 +9,6 @@
   <link rel="icon" type="image/png" href="assets/logo-ccb.png">
   <link rel="stylesheet" href="style.css">
   <script src="vendor/jszip.min.js" defer></script>
-  <script src="config.js" defer></script>
   <script src="exports.js" defer></script>
   <script src="app.js" defer></script>
 </head>
@@ -122,23 +121,7 @@
           <button class="btn btn-outline small-backup btn-import" id="btn-import" type="button">Restaurar cópia</button>
           <input id="import-file" type="file" accept=".json,application/json" hidden>
         </div>
-        <p class="credits">Sistema criado para ajudar os irmãos na organização da presença em reuniões em geral. Dúvidas e sugestões de melhorias, entre em contato: (21) 98143-9828</p>
-        <details class="sync-settings" id="sync-settings">
-          <div class="sync-form">
-            <p>O GitHub Pages guarda as informações neste aparelho, inclusive offline. Para também usar o MySQL, configure um backend Java hospedado separadamente.</p>
-            <label for="api-url">URL pública do backend (HTTPS)</label>
-            <input id="api-url" type="url" placeholder="https://api.seudominio.com.br" spellcheck="false" autocomplete="url">
-            <label for="api-user">Usuário do backend</label>
-            <input id="api-user" type="text" autocomplete="username" placeholder="Usuário">
-            <label for="api-password">Senha do backend (não é salva)</label>
-            <input id="api-password" type="password" autocomplete="current-password" placeholder="Senha">
-            <div class="sync-buttons">
-              <button class="btn btn-primary" type="button" id="btn-sync">Enviar dados ao MySQL</button>
-              <button class="btn btn-outline" type="button" id="btn-load-cloud">Carregar do MySQL</button>
-            </div>
-            <p id="sync-feedback" class="sync-feedback" role="status">Sincronização desativada. Seus dados permanecem salvos localmente.</p>
-          </div>
-        </details>
+        <p class="credits">Sistema criado para ajudar os irmãos na organização da presença em reuniões em geral.<br>Dúvidas e sugestões de melhorias, entre em contato: (21) 98143-9828</p>
       </div>
     </section>
   </main>

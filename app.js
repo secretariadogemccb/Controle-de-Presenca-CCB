@@ -11,10 +11,7 @@
   let db = null;
   let editingId = null;
   let toastTimer;
-  let syncTimer;
-  let syncInProgress = false;
   let initializedChanges = 0;
-  let authReady = false;
 
   function makeId() {
     if (crypto && typeof crypto.randomUUID === 'function') return crypto.randomUUID();
@@ -100,7 +97,6 @@
     catch { /* IndexedDB é uma segunda opção. */ }
     saveToDb(state);
     setIndicator(saved ? '✓ Dados salvos neste dispositivo · mesmo offline' : '⚠ Armazenamento local indisponível; faça uma cópia JSON.', !saved);
-    scheduleSync();
   }
   function formToState() {
     for (const field of ['evento', 'local', 'data']) state[field] = $(field).value;
@@ -278,67 +274,6 @@
       toast('Mensagem preparada para o WhatsApp.');
     }
   }
-  function getApiBase() { return $('api-url').value.trim().replace(/\/+$/, ''); }
-  function credentials() {
-    const user = $('api-user').value.trim(), password = $('api-password').value;
-    if (!user || !password) return null;
-    return 'Basic ' + btoa(unescape(encodeURIComponent(user + ':' + password)));
-  }
-  function syncStatus(text, isError = false) {
-    $('sync-feedback').textContent = text;
-    $('sync-feedback').style.color = isError ? '#bf3344' : '#37745e';
-  }
-  function scheduleSync() {
-    clearTimeout(syncTimer);
-    if (authReady && getApiBase() && credentials() && navigator.onLine) {
-      syncTimer = setTimeout(() => sendToCloud(false), 2200);
-    }
-  }
-  async function requestCloud(method, body) {
-    const base = getApiBase();
-    if (!/^https:\/\//i.test(base) && !/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(base)) {
-      throw new Error('Informe uma URL HTTPS válida do backend (ou HTTP somente em localhost).');
-    }
-    const authorization = credentials();
-    if (!authorization) throw new Error('Informe o usuário e a senha do backend.');
-    const request = { method, headers: { Authorization: authorization, Accept: 'application/json' } };
-    if (body !== undefined) {
-      request.headers['Content-Type'] = 'application/json'; request.body = JSON.stringify(body);
-    }
-    const response = await fetch(base + '/api/eventos/' + encodeURIComponent(state.id), request);
-    if (!response.ok) {
-      if (response.status === 401 || response.status === 403) throw new Error('Acesso negado. Confira usuário, senha e CORS.');
-      if (response.status === 404) throw new Error('Este evento ainda não existe no MySQL. Primeiro envie seus dados.');
-      throw new Error('Erro do servidor: HTTP ' + response.status);
-    }
-    return response.json();
-  }
-  async function sendToCloud(showToast = true) {
-    if (syncInProgress) return;
-    syncInProgress = true; $('btn-sync').disabled = true;
-    try {
-      const revision = state.atualizadoEm;
-      if (!navigator.onLine) throw new Error('Sem internet. Seus dados continuam salvos neste dispositivo.');
-      await requestCloud('PUT', state);
-      authReady = true;
-      syncStatus('✓ Evento sincronizado com o MySQL.');
-      if (showToast) toast('Dados enviados ao MySQL com sucesso!');
-      if (state.atualizadoEm !== revision) scheduleSync();
-    } catch (e) { syncStatus(e.message + ' Os dados locais foram preservados.', true); if (showToast) toast(e.message, true); }
-    finally { syncInProgress = false; $('btn-sync').disabled = false; }
-  }
-  async function loadFromCloud() {
-    if (!window.confirm('Carregar o evento do servidor? Os dados locais deste evento serão substituídos. Faça um backup JSON antes, se necessário.')) return;
-    try {
-      const cloud = await requestCloud('GET');
-      const next = cleanState(cloud);
-      if (!next) throw new Error('Resposta do servidor inválida.');
-      state = next; restoreDraft(); syncForm(); persist(); render();
-      authReady = true;
-      syncStatus('✓ Evento carregado do MySQL e salvo neste dispositivo.');
-      toast('Evento carregado com sucesso!');
-    } catch(e) { syncStatus(e.message, true); toast(e.message, true); }
-  }
   async function initializePersistence() {
     const changedOnStartup = initializedChanges;
     db = await openDb();
@@ -382,16 +317,7 @@
     catch(e) { toast('Não foi possível gerar o Word: ' + e.message, true); }
     finally { $('btn-word').disabled = false; }
   });
-  $('btn-sync').addEventListener('click', () => sendToCloud(true));
-  $('btn-load-cloud').addEventListener('click', loadFromCloud);
-  try {
-    $('api-url').value = localStorage.getItem('ccb_api_url') || window.CCB_CONFIG?.apiBaseUrl || '';
-    $('api-user').value = localStorage.getItem('ccb_api_user') || '';
-  } catch { $('api-url').value = window.CCB_CONFIG?.apiBaseUrl || ''; }
-  for (const f of ['api-url','api-user']) $(f).addEventListener('change', () => {
-    try { localStorage.setItem('ccb_api_url', $('api-url').value.trim()); localStorage.setItem('ccb_api_user', $('api-user').value.trim()); } catch {}
-  });
-  window.addEventListener('online', () => { if (authReady) scheduleSync(); else setIndicator('✓ Conexão restaurada · dados locais preservados'); });
+  window.addEventListener('online', () => setIndicator('✓ Conexão restaurada · dados locais preservados'));
   window.addEventListener('offline', () => setIndicator('● Offline · dados salvos neste dispositivo'));
   syncForm(); restoreDraft(); render(); initializePersistence();
   if (!navigator.onLine) setIndicator('● Offline · dados salvos neste dispositivo');
