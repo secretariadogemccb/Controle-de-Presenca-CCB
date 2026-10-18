@@ -1,16 +1,21 @@
 # 📋 Controle de Presença CCB — Site para GitHub Pages
 
+**Versão atualizada (17/10/2026) — Layout e exportações no padrão do PDF de referência.**
+
 Este diretório contém o **site completo, estático e responsivo** do sistema. O visual da página inicial foi criado tomando como referência a tela enviada (formulário à esquerda e prévia à direita). As imagens CCB, clave de sol, clave de fá e lixeira foram incluídas em `assets/`.
 
 ## Funcionalidades
 
 - Dados do evento: tipo/nome, local, data e anotações gerais.
 - Participantes: nome, comum congregação, cargo/ministério e situação (P, F, FJ, FC).
+- Botões das situações com preenchimento completo na cor da borda quando marcados.
+- ✅ Presença e Facultativo; ❌ Falta e Falta Justificada — na prévia, WhatsApp, PDF e Word.
+- PDF e Word com logo CCB, claves musicais, quadros de contagem, lista, resumo, anotações e bênção, seguindo o modelo fornecido.
 - Adicionar, editar e excluir participantes; prévia e contadores automáticos.
 - Aviso central confirmando inclusão e edição de participantes.
-- PDF real em A4 e Word `.docx` gerados **sem depender da internet**.
+- PDF em A4 e Word `.docx` gerados **sem depender da internet** depois de o site e os seus arquivos serem carregados. O Word é editável, enquanto os ícones do PDF são elementos gráficos impressos.
 - Mensagem formatada para WhatsApp (para enviá-la é necessário acesso à internet).
-- Exportar e restaurar uma cópia de segurança `.json`.
+- Exportar e restaurar uma cópia de segurança no formato `.json` (botões com os textos **Salvar cópia** e **Restaurar cópia**).
 - Dados do evento, participantes e formulário parcialmente preenchido preservados quando a página atualiza, fecha ou perde conexão: `localStorage` + uma cópia no `IndexedDB`.
 - Service Worker que mantém os arquivos do site disponíveis offline, após a primeira visita com internet.
 - **Novo Evento** pergunta antes de apagar os dados atuais deste aparelho.
@@ -52,7 +57,7 @@ A URL base deve conter o protocolo `https://`, por exemplo `https://api.exemplo.
 ## Preservação de dados e cuidados
 
 - Os dados permanecem no mesmo navegador até o usuário selecionar **Novo Evento**, alterar participantes manualmente, restaurar outra cópia ou apagar o armazenamento do navegador.
-- Limpar dados do site, usar navegação privada, trocar de navegador ou de aparelho pode remover/impedir acesso aos registros locais. Faça regularmente **Salvar cópia (.json)** ou sincronize no MySQL.
+- Limpar dados do site, usar navegação privada, trocar de navegador ou de aparelho pode remover/impedir acesso aos registros locais. Faça regularmente **Salvar cópia** ou sincronize no MySQL.
 - A sincronização é **por evento e por aparelho**, não é uma plataforma multiusuário com resolução automática de conflitos.
 - A mensagem do WhatsApp contém os nomes adicionados. Compartilhe somente com os destinatários apropriados.
 - O backend deve ser protegido por HTTPS e credenciais fortes; não habilite CORS para todas as origens em produção.
@@ -72,3 +77,7 @@ vendor/jszip.min.js    Gerador local de pacotes DOCX (JSZip)
 ```
 
 **Tecnologias:** HTML5, CSS3, JavaScript (frontend), Java 21 + Spring Boot + MySQL (backend opcional).
+
+### Atualização de uma instalação existente
+
+Envie os arquivos do novo ZIP por cima dos antigos na raiz do repositório, mantendo a estrutura `assets/` e `vendor/`. Não é necessário alterar o backend ou o banco MySQL. O nome do cache de aplicativo foi atualizado; se o navegador ainda mostrar a versão antiga, feche e abra a página novamente ou force a atualização com Ctrl+F5. Os registros locais usam as mesmas chaves de armazenamento das versões anteriores, por isso não são apagados ao atualizar os arquivos, desde que o armazenamento do domínio original seja mantido.

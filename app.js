@@ -5,7 +5,7 @@
   const DB_STORE = 'registros';
   const $ = (id) => document.getElementById(id);
   const statusTitle = { P: 'Presente', F: 'Falta', FJ: 'Falta justificada', FC: 'Facultativo' };
-  const statusMark = { P: '☑', F: '✕', FJ: '☒', FC: '◇' };
+  const statusMark = { P: '✅', F: '❌', FJ: '❌', FC: '✅' };
   let state = readLocal() || blankState();
   let lastSavedJson = '';
   let db = null;
@@ -232,6 +232,10 @@
     document.body.append(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
+  function flashAction(id) {
+    const button = $(id); button.classList.add('is-activated');
+    setTimeout(() => button.classList.remove('is-activated'), 900);
+  }
   function backup() {
     download(new Blob([JSON.stringify(state, null, 2)], { type: 'application/json;charset=utf-8' }), fileName('json'));
     toast('Cópia de segurança gerada!');
@@ -362,13 +366,15 @@
     else if (window.confirm('Criar novo evento e apagar os dados locais atuais?')) createNewEvent();
   });
   $('new-event-dialog').addEventListener('close', () => { if ($('new-event-dialog').returnValue === 'confirm') createNewEvent(); });
-  $('btn-backup').addEventListener('click', backup);
-  $('btn-import').addEventListener('click', () => $('import-file').click());
+  $('btn-backup').addEventListener('click', () => { flashAction('btn-backup'); backup(); });
+  $('btn-import').addEventListener('click', () => { flashAction('btn-import'); $('import-file').click(); });
   $('import-file').addEventListener('change', e => restoreBackup(e.target.files?.[0]));
   $('btn-whatsapp').addEventListener('click', shareWhatsApp);
-  $('btn-pdf').addEventListener('click', () => {
-    try { download(CCBExports.createPdf(state), fileName('pdf')); toast('PDF gerado com sucesso!'); }
+  $('btn-pdf').addEventListener('click', async () => {
+    $('btn-pdf').disabled = true;
+    try { download(await CCBExports.createPdf(state), fileName('pdf')); toast('PDF gerado com sucesso!'); }
     catch(e) { toast('Não foi possível gerar o PDF: ' + e.message, true); }
+    finally { $('btn-pdf').disabled = false; }
   });
   $('btn-word').addEventListener('click', async () => {
     $('btn-word').disabled = true;
