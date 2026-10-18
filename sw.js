@@ -1,5 +1,5 @@
 /* Cache offline dos arquivos públicos do site. */
-const CACHE = 'ccb-presenca-v3-20261018-sem-sincronizacao';
+const CACHE = 'ccb-presenca-v4-20261018-mobile-corrigido';
 const FILES = ['./','./index.html','./style.css','./app.js','./exports.js','./vendor/jszip.min.js','./assets/logo-ccb.png','./assets/clave-sol.png','./assets/clave-fa.png','./assets/lixeira.png','./assets/emoji-check.png','./assets/emoji-cross.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(()=>self.skipWaiting()));

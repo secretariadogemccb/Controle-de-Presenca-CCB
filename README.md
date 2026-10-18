@@ -1,6 +1,6 @@
 # Controle de Presença CCB — GitHub Pages
 
-Versão atualizada: painel de sincronização com Java 21 e MySQL **removido por solicitação**.
+Versão atualizada: tipografia ampliada somente no mobile e campo Data corrigido no Safari do iPhone. Painel de sincronização removido.
 
 ## Publicação
 

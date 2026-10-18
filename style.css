@@ -17,3 +17,114 @@
 .status-choice input:checked + span:hover{filter:brightness(.94)}
 .small-backup:active,.small-backup.is-activated,.small-backup:focus-visible{background:#a2aab0;color:#fff;border-color:#a2aab0}
 @media (prefers-reduced-motion:reduce){.status-choice span,.btn{transition:none}}
+
+
+/* Ajustes responsivos para celulares/tablets (18/10/2026):
+   tipografia ampliada e correção da largura do input date no Safari do iPhone.
+   Regras restritas a telas até 800 px: a versão desktop permanece intacta. */
+@media (max-width: 800px) {
+  /* Evita que controles com largura intrínseca (especialmente input date do iOS)
+     forcem a grade ou o formulário para fora da tela. */
+  .layout,.editor,.form-panel,.field-row,.field,.participants-panel,.preview {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .form-panel {width:100%;}
+  .field-row {width:100%;}
+  .field input,.field textarea {min-width:0;max-width:100%;width:100%;box-sizing:border-box;}
+  .field input[type="date"] {
+    display:block;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    height:54px;
+    min-height:54px;
+    padding:10px 14px;
+    font-size:18px;
+    line-height:1.35;
+    text-align:left;
+    -webkit-appearance:none;
+    appearance:none;
+    overflow:hidden;
+  }
+  .field input[type="date"]::-webkit-date-and-time-value {
+    min-width:0;
+    max-width:100%;
+    text-align:left;
+  }
+  .field input[type="date"]::-webkit-datetime-edit {
+    min-width:0;
+    max-width:100%;
+    padding:0;
+  }
+  .field input[type="date"]::-webkit-calendar-picker-indicator {
+    flex-shrink:0;
+    margin-inline-start:5px;
+    max-width:23px;
+    cursor:pointer;
+  }
+
+  /* Letras maiores em todas as áreas da experiência mobile. */
+  .editor-header h1 {font-size:17px;line-height:1.3;padding:7px 11px;}
+  .btn-new {font-size:18px;min-height:52px;}
+  .save-indicator {font-size:14px;line-height:1.45;text-align:center;justify-content:center;}
+  .form-panel legend {font-size:17px;line-height:1.25;}
+  .field label {font-size:16px;line-height:1.3;margin-bottom:6px;}
+  .field input {font-size:18px;height:54px;min-height:54px;padding:10px 16px;}
+  .field textarea {font-size:18px;line-height:1.4;padding:15px 17px;}
+  .field input::placeholder,.field textarea::placeholder {font-size:16px;line-height:1.35;}
+  .field-notes textarea {height:116px;min-height:116px;}
+  .status-label {font-size:16px;line-height:1.35;}
+  .status-choice span {font-size:15px;line-height:1.2;min-height:52px;padding:8px 5px;}
+  .form-actions .btn {font-size:16px;line-height:1.25;min-height:54px;padding:10px 12px;}
+  .preview-eyebrow {font-size:16px;}
+  .preview h2 {font-size:28px;line-height:1.2;}
+  .event-summary {font-size:19px;line-height:1.35;}
+  .counter {min-height:88px;gap:5px;padding:10px 13px;}
+  .counter span {font-size:14px;letter-spacing:0;line-height:1.25;}
+  .counter strong {font-size:35px;}
+  .participant-line {font-size:18px;line-height:1.35;gap:7px;}
+  .participant-main small {font-size:15px;}
+  .status-mark {font-size:21px;min-width:23px;}
+  .icon-btn {font-size:20px;min-width:34px;min-height:37px;}
+  .delete-btn img {width:19px;height:26px;}
+  .empty-list {font-size:17px;}
+  .totals,.notes-preview,.blessing {font-size:19px;line-height:1.4;}
+  .totals .total-all {font-size:15px;}
+  .export-actions .btn {font-size:16px;line-height:1.25;min-height:54px;}
+  .export-actions .small-backup {font-size:16px!important;}
+  .credits {font-size:14px;line-height:1.45;}
+  .toast {font-size:17px;line-height:1.4;}
+  .confirm-dialog h3 {font-size:22px;}
+  .confirm-dialog p {font-size:17px;}
+  .dialog-actions .btn {font-size:16px;min-height:50px;}
+}
+
+@media (max-width: 470px) {
+  .layout {padding-inline:12px;}
+  .editor-header h1 {font-size:15.5px;line-height:1.3;padding-inline:10px;}
+  .form-panel {padding:23px 14px;border-radius:32px;}
+  .form-panel legend {font-size:16px;width:80%;}
+  .field-row {grid-template-columns:minmax(0,1fr);gap:0;}
+  .status-options {gap:8px;}
+  .status-choice span {font-size:14.5px;min-height:54px;padding:8px 3px;}
+  .form-actions {grid-template-columns:minmax(0,1fr);}
+  /* Duas colunas dão espaço suficiente aos nomes dos quatro indicadores. */
+  .counters {grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .counter {min-height:87px;padding:10px 13px;}
+  .counter span {font-size:14px;}
+  .counter strong {font-size:34px;}
+  .participant-line {font-size:17px;gap:5px;}
+  .participant-main small {font-size:14px;}
+  .export-actions {grid-template-columns:minmax(0,1fr);}
+  .credits {font-size:13.5px;}
+  .field input[type="date"] {font-size:18px;}
+}
+
+@media (max-width: 350px) {
+  .editor-header h1 {font-size:14px;}
+  .status-choice span {font-size:13.5px;}
+  .form-panel {padding-inline:11px;}
+  .counter span {font-size:13px;}
+  .field input[type="date"] {font-size:17px;}
+}
