@@ -1,6 +1,6 @@
 # Controle de Presença CCB — GitHub Pages
 
-Versão atualizada: tipografia ampliada somente no mobile e campo Data corrigido no Safari do iPhone. Painel de sincronização removido.
+Versão 2.3: todas as fontes ampliadas proporcionalmente em dispositivos móveis e campo Data reduzido e centralizado para evitar borda ultrapassando o formulário no iPhone. Painel de sincronização removido.
 
 ## Publicação
 
